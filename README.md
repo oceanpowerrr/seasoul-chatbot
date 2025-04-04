@@ -1,2 +1,3 @@
-# seasoul-chatbot
-SEASOUL 對話空間 - 靈魂修行陪伴
+# SEASOUL Chatbot
+
+This is a simple starter template.
