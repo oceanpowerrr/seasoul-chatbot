@@ -1,4 +1,8 @@
 export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ reply: '僅支援 POST 請求' });
+  }
+
   try {
     const { message } = req.body;
 
@@ -31,4 +35,3 @@ export default async function handler(req, res) {
     res.status(500).json({ reply: "伺服器錯誤，請稍後再試。" });
   }
 }
-
