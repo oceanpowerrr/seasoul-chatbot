@@ -1,1 +1,28 @@
-<!DOCTYPE html><html><head><title>SEASOUL Chatbot</title></head><body><h1>SEASOUL Chatbot is working!</h1></body></html>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SEASOUL Chatbot</title>
+    <meta charset="UTF-8" />
+    <style>
+        body { font-family: sans-serif; background: #f2f8f9; padding: 40px; }
+        h1 { color: #2e4053; }
+        #chatbox { width: 100%; max-width: 600px; margin: 0 auto; padding: 20px; background: white; border-radius: 8px; }
+        .message { margin-bottom: 10px; }
+        .user { color: #1f618d; font-weight: bold; }
+        .bot { color: #117864; font-style: italic; }
+        input[type="text"] { width: 80%; padding: 10px; }
+        button { padding: 10px 20px; }
+    </style>
+</head>
+<body>
+    <div id="chatbox">
+        <h1>SEASOUL Chatbot</h1>
+        <div id="messages"></div>
+        <input type="text" id="input" placeholder="輸入你的心聲..." />
+        <button onclick="sendMessage()">送出</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
