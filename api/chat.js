@@ -1,3 +1,5 @@
+import fetch from 'node-fetch';
+
 export default async function handler(req, res) {
   const { message } = req.body;
 
@@ -9,7 +11,7 @@ export default async function handler(req, res) {
         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "gpt-3.5-turbo", // 你也可以改回 "gpt-4" 測試
+        model: "gpt-3.5-turbo", // 可換成 gpt-4
         messages: [
           {
             role: "system",
