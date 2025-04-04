@@ -28,6 +28,7 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
+    console.log("GPT 回傳內容：", data);
     const reply = data.choices?.[0]?.message?.content || "我暫時無法回應，請稍後再試一次。";
     res.status(200).json({ reply });
   } catch (err) {
