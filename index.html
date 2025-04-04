@@ -3,8 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <title>靜映 Still Reflection</title>
-
-  <!-- 字型 -->
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC&display=swap" rel="stylesheet">
 
   <style>
@@ -47,8 +45,8 @@
     }
 
     .message { margin-bottom: 12px; }
-    .user { color: #005b96; font-weight: bold; }
-    .bot { color: #007e73; font-style: italic; }
+    .user { color: #4b5f6d; font-weight: bold; }
+    .bot { color: #5c746a; font-style: italic; }
 
     input[type="text"] {
       width: 70%;
@@ -70,15 +68,32 @@
     button:hover {
       background-color: #003f6f;
     }
+
+    .music-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #ffffff;
+      border: none;
+      font-size: 20px;
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      transition: background 0.3s ease;
+    }
+
+    .music-btn:hover {
+      background: #eeeeee;
+    }
   </style>
 </head>
 <body>
   <div id="chatbox">
     <h1>靜映 Still Reflection</h1>
-
     <div class="intro">
-      <p>「這是一場與自己的對話」</p>
-      <p>「海般靜映，讓你照見內在深處的聲音與智慧」</p>
+      <p>這是一場與自己的對話。</p>
+      <p>海般靜映，讓你照見內在深處的聲音與智慧。</p>
     </div>
 
     <div id="messages"></div>
@@ -86,7 +101,25 @@
     <button onclick="sendMessage()">送出</button>
   </div>
 
+  <!-- 背景音樂播放器 -->
+  <audio id="bgm" autoplay loop>
+    <source src="ocean_bowl_mixed.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <!-- 音樂控制按鈕 -->
+  <button onclick="toggleMusic()" class="music-btn">🔊</button>
+
   <script>
+    function toggleMusic() {
+      const audio = document.getElementById("bgm");
+      if (audio.paused) {
+        audio.play();
+      } else {
+        audio.pause();
+      }
+    }
+
     async function sendMessage() {
       const input = document.getElementById('input');
       const text = input.value.trim();
@@ -110,4 +143,3 @@
   </script>
 </body>
 </html>
-
