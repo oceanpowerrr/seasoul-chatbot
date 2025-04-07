@@ -4,71 +4,62 @@
   <meta charset="UTF-8" />
   <title>靜映 Still Reflection</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC&display=swap" rel="stylesheet">
-
   <style>
     body {
       font-family: 'Noto Serif TC', serif;
-      background-color: #f9fbfc;
+      background-color: #f4f8f6;
       padding: 40px;
-      color: #445c5a;
-      line-height: 1.8;
+      color: #3c3c3c;
     }
-
     #chatbox {
       width: 100%;
       max-width: 600px;
       margin: auto;
-      padding: 30px 20px;
+      padding: 30px;
       background: white;
       border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.08);
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
     }
-
-    h1 {
-      text-align: center;
-      font-size: 2em;
-      margin-bottom: 10px;
-      color: #2b3b40;
+    .message {
+      margin-bottom: 16px;
+      line-height: 1.8;
     }
-
-    .intro {
-      text-align: center;
-      margin-bottom: 25px;
-      font-size: 1.1em;
-      color: #445c5a;
-      animation: fadeIn 2s ease-in-out;
+    .user {
+      color: #395B64;
+      font-weight: bold;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
+    .bot {
+      color: #4a6d64;
+      font-style: italic;
     }
-
-    .message { margin-bottom: 12px; }
-    .user { color: #4b5f6d; font-weight: bold; }
-    .bot { color: #5c746a; font-style: italic; }
-
     input[type="text"] {
       width: 70%;
-      padding: 10px;
-      margin-right: 10px;
+      padding: 12px;
       border: 1px solid #ccc;
-      border-radius: 6px;
+      border-radius: 4px;
     }
-
     button {
-      padding: 10px 20px;
+      padding: 12px 20px;
+      background-color: #a0cfc0;
       border: none;
-      background-color: #005b96;
-      color: white;
-      border-radius: 6px;
+      border-radius: 4px;
       cursor: pointer;
     }
-
     button:hover {
-      background-color: #003f6f;
+      background-color: #8bbbab;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 5px;
+    }
+    h2 {
+      text-align: center;
+      margin-top: 0;
+      font-weight: normal;
+      color: #5a5a5a;
     }
 
+    /* 音樂按鈕樣式 */
     .music-btn {
       position: fixed;
       bottom: 20px;
@@ -82,32 +73,32 @@
       box-shadow: 0 0 8px rgba(0,0,0,0.1);
       transition: background 0.3s ease;
     }
-
     .music-btn:hover {
       background: #eeeeee;
     }
   </style>
 </head>
 <body>
-  <div id="chatbox">
-    <h1>靜映 Still Reflection</h1>
-    <div class="intro">
-      <p>這是一場與自己的對話。</p>
-      <p>海般靜映，讓你照見內在深處的聲音與智慧。</p>
-    </div>
 
+  <h1>靜映 Still Reflection</h1>
+  <h2>這是一場與自己的對話</h2>
+  <p style="text-align:center; color:#666; margin-bottom: 40px;">
+    海般靜映，讓你照見內在深處的聲音與智慧。
+  </p>
+
+  <div id="chatbox">
     <div id="messages"></div>
-    <input type="text" id="input" placeholder="寫下此刻的感受…" />
+    <input type="text" id="input" placeholder="你此刻的心聲是..." />
     <button onclick="sendMessage()">送出</button>
   </div>
 
   <!-- 背景音樂播放器 -->
   <audio id="bgm" autoplay loop>
-    <source src="ocean_bowl_mixed.mp3" type="audio/mpeg">
+    <source src="seasoul_mixed_bgm.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
 
-  <!-- 音樂控制按鈕 -->
+  <!-- 播放／靜音控制 -->
   <button onclick="toggleMusic()" class="music-btn">🔊</button>
 
   <script>
@@ -120,26 +111,39 @@
       }
     }
 
+    document.addEventListener('click', () => {
+      const audio = document.getElementById("bgm");
+      if (audio && audio.paused) {
+        audio.play().catch(e => console.log("音樂播放失敗：", e));
+      }
+    });
+
     async function sendMessage() {
       const input = document.getElementById('input');
       const text = input.value.trim();
       if (!text) return;
 
       const messages = document.getElementById('messages');
-      messages.innerHTML += '<div class="message user">你：' + text + '</div>';
-      messages.innerHTML += '<div class="message bot" id="loading">SEASOUL 正在感受你的話語…</div>';
+      messages.innerHTML += `<div class="message user">你：${text}</div>`;
+      messages.innerHTML += `<div class="message bot" id="loading">seasoul 正在回應你...</div>`;
       input.value = '';
 
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text })
-      });
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text })
+        });
 
-      const data = await res.json();
-      document.getElementById('loading').remove();
-      messages.innerHTML += '<div class="message bot">SEASOUL：' + data.reply + '</div>';
+        const data = await res.json();
+        document.getElementById('loading').remove();
+        messages.innerHTML += `<div class="message bot">seasoul：${data.reply}</div>`;
+      } catch (error) {
+        document.getElementById('loading').remove();
+        messages.innerHTML += `<div class="message bot">seasoul：出現一些問題，請稍後再試 🙏</div>`;
+      }
     }
   </script>
 </body>
 </html>
+
