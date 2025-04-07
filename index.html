@@ -56,6 +56,16 @@
       backdrop-filter: blur(12px);
       padding: 20px;
       box-shadow: 0 0 12px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      max-height: 50vh;
+      overflow: hidden;
+    }
+
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 10px;
     }
 
     .message {
@@ -70,6 +80,12 @@
     .bot {
       color: #fff0f5;
       font-style: italic;
+    }
+
+    .input-area {
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     input[type="text"] {
@@ -122,6 +138,10 @@
         font-size: 18px;
         margin-top: 80px;
       }
+
+      #chatbox {
+        max-height: 45vh;
+      }
     }
   </style>
 </head>
@@ -132,12 +152,12 @@
     您的瀏覽器不支援影片播放。
   </video>
 
-  <!-- 左上角 LOGO -->
+  <!-- LOGO -->
   <header>
     <img src="still_reflection_logo.png" id="logo" alt="Still Reflection Logo" />
   </header>
 
-  <!-- 副標文字 -->
+  <!-- 副標 -->
   <div class="subtitle">
     這是一場與自己的對話<br>
     海般靜映，讓你照見內在深處的聲音與智慧
@@ -146,25 +166,26 @@
   <!-- 對話框 -->
   <div id="chatbox">
     <div id="messages"></div>
-    <input type="text" id="input" placeholder="留下你的心語…" />
-    <button onclick="sendMessage()">送出</button>
+    <div class="input-area">
+      <input type="text" id="input" placeholder="留下你的心語…" />
+      <button onclick="sendMessage()">送出</button>
+    </div>
   </div>
 
-  <!-- 背景音樂控制 -->
+  <!-- 音樂控制 -->
   <div id="controls">
     <img id="toggle" class="icon" src="https://img.icons8.com/ios-filled/50/ffffff/speaker.png" alt="音量" onclick="toggleAudio()" />
     <input type="range" id="volume" min="0" max="1" step="0.01" value="0.3" onchange="setVolume(this.value)">
   </div>
 
-  <!-- 背景音樂 -->
   <audio id="bgm" autoplay loop>
     <source src="seasoul_mixed_bgm.mp3" type="audio/mpeg" />
-    您的瀏覽器不支援音樂播放。
   </audio>
 
   <script>
     const bgm = document.getElementById("bgm");
     const toggleBtn = document.getElementById("toggle");
+    const messagesBox = document.getElementById("messages");
 
     function toggleAudio() {
       if (bgm.paused) {
@@ -199,6 +220,9 @@
       const data = await res.json();
       document.getElementById("loading").remove();
       messages.innerHTML += '<div class="message bot">seasoul：' + data.reply + '</div>';
+
+      // 自動捲到底部
+      messagesBox.scrollTop = messagesBox.scrollHeight;
     }
   </script>
 </body>
