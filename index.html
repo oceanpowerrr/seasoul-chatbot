@@ -59,22 +59,29 @@
       color: #5a5a5a;
     }
 
-    /* 音樂按鈕樣式 */
-    .music-btn {
+    /* 音樂控制樣式 */
+    .music-controls {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      background: #ffffff;
-      border: none;
-      font-size: 20px;
-      padding: 10px;
-      border-radius: 50%;
-      cursor: pointer;
-      box-shadow: 0 0 8px rgba(0,0,0,0.1);
-      transition: background 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #fff;
+      padding: 10px 14px;
+      border-radius: 30px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    .music-btn:hover {
-      background: #eeeeee;
+
+    .music-btn {
+      border: none;
+      background: none;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .volume-slider {
+      width: 100px;
     }
   </style>
 </head>
@@ -98,26 +105,44 @@
     Your browser does not support the audio element.
   </audio>
 
-  <!-- 播放／靜音控制 -->
-  <button onclick="toggleMusic()" class="music-btn">🔊</button>
+  <!-- 音樂控制 -->
+  <div class="music-controls">
+    <button id="music-toggle" onclick="toggleMusic()" class="music-btn">🔊</button>
+    <input type="range" id="volume-control" class="volume-slider" min="0" max="1" step="0.01" value="0.7" />
+  </div>
 
   <script>
+    const audio = document.getElementById("bgm");
+    const toggleBtn = document.getElementById("music-toggle");
+    const volumeSlider = document.getElementById("volume-control");
+
+    // 初始化音量
+    audio.volume = 0.7;
+
+    // 播放或暫停
     function toggleMusic() {
-      const audio = document.getElementById("bgm");
       if (audio.paused) {
         audio.play();
+        toggleBtn.innerText = "🔊";
       } else {
         audio.pause();
+        toggleBtn.innerText = "🔇";
       }
     }
 
-    document.addEventListener('click', () => {
-      const audio = document.getElementById("bgm");
-      if (audio && audio.paused) {
-        audio.play().catch(e => console.log("音樂播放失敗：", e));
-      }
+    // 音量調整
+    volumeSlider.addEventListener("input", function () {
+      audio.volume = this.value;
     });
 
+    // 瀏覽器阻擋處理
+    document.addEventListener("click", () => {
+      if (audio.paused) {
+        audio.play().catch(e => console.log("音樂播放被瀏覽器阻擋"));
+      }
+    }, { once: true });
+
+    // 對話送出邏輯
     async function sendMessage() {
       const input = document.getElementById('input');
       const text = input.value.trim();
@@ -144,6 +169,6 @@
       }
     }
   </script>
-</body>
-</html>
 
+</body>
+</html
