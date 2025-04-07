@@ -8,17 +8,52 @@
     body {
       font-family: "Noto Serif TC", "仿宋體", serif;
       background-color: #f5f7f4;
-      padding: 40px 20px;
       margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 700px;
+      padding: 20px;
+      margin: 0 auto;
+    }
+
+    #logo {
+      height: 60px;
+      width: auto;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 1.1rem;
+      margin-top: 10px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      padding-bottom: 80px;
     }
 
     #chatbox {
+      width: 90%;
       max-width: 700px;
-      margin: 80px auto 50px auto;
-      padding: 30px;
       background: #ffffff;
       border-radius: 12px;
       box-shadow: 0 0 16px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      margin-top: 20px;
     }
 
     .message {
@@ -58,46 +93,31 @@
       background-color: #3f5f4c;
     }
 
-    header {
+    /* 音樂控制浮動樣式 */
+    #audio-controls {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      max-width: 700px;
-      margin: 0 auto;
+      background: #ffffffcc;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
     }
 
-    #logo {
-      height: 60px;
-      width: auto;
-      max-width: 300px;
-    }
-
-    .subtitle {
-      text-align: center;
-      font-size: 1.1rem;
+    #volume {
+      writing-mode: bt-lr; /* 垂直方向 */
+      -webkit-appearance: slider-vertical;
+      height: 100px;
       margin-top: 10px;
-      color: #666;
-      line-height: 1.5;
     }
 
     @media (max-width: 600px) {
-      header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
       #logo {
         height: 50px;
       }
-    }
-
-    #audio-controls {
-      text-align: right;
-      max-width: 700px;
-      margin: 10px auto 0;
-    }
-
-    #audio-controls input[type=range] {
-      vertical-align: middle;
     }
   </style>
 </head>
@@ -107,18 +127,17 @@
     <img id="logo" src="still_reflection_logo.png" alt="靜映 Still Reflection Logo">
   </header>
 
-  <div class="subtitle">這是一場與自己的對話。<br>海般靜映，讓你照見內在深處的聲音與智慧。</div>
-
-  <div id="chatbox">
-    <div id="messages"></div>
-    <input type="text" id="input" placeholder="請寫下此刻你想說的話…" />
-    <button onclick="sendMessage()">送出</button>
+  <div class="subtitle">
+    這是一場與自己的對話。<br>海般靜映，讓你照見內在深處的聲音與智慧。
   </div>
 
-  <div id="audio-controls">
-    🔊 <button onclick="toggleMusic()">暫停/播放</button>
-    音量：<input type="range" id="volume" min="0" max="1" step="0.01" value="0.5" onchange="setVolume(this.value)">
-  </div>
+  <main>
+    <div id="chatbox">
+      <div id="messages"></div>
+      <input type="text" id="input" placeholder="請寫下此刻你想說的話…" />
+      <button onclick="sendMessage()">送出</button>
+    </div>
+  </main>
 
   <!-- 背景音樂播放器 -->
   <audio id="bgm" autoplay loop>
@@ -126,8 +145,16 @@
     Your browser does not support the audio element.
   </audio>
 
+  <!-- 音樂控制區塊 -->
+  <div id="audio-controls">
+    <button onclick="toggleMusic()">🔊</button>
+    <input type="range" id="volume" min="0" max="1" step="0.01" value="0.5" onchange="setVolume(this.value)">
+  </div>
+
   <script>
     const audio = document.getElementById("bgm");
+    audio.volume = 0.5;
+
     function toggleMusic() {
       if (audio.paused) {
         audio.play();
@@ -135,6 +162,7 @@
         audio.pause();
       }
     }
+
     function setVolume(val) {
       audio.volume = val;
     }
