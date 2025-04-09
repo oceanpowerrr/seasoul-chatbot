@@ -2,176 +2,255 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SEASOUL Chatbot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>靜映 Still Reflection</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      background: #0e1d23;
-      color: #fff;
-      font-family: "Noto Serif TC", serif;
-      margin: 0;
-      padding: 0;
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Serif TC', serif; }
+    body, html { height: 100%; overflow: hidden; }
+
+    video.bg-video {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
     }
-    #chatbox {
-      width: 90%;
-      max-width: 700px;
-      margin: 100px auto 30px;
-      padding: 20px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(10px);
+
+    #logo {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      width: 180px;
+      z-index: 2;
     }
-    .subtitle {
+
+    .intro {
       text-align: center;
-      margin-top: 40px;
-      font-size: 20px;
-      line-height: 1.6;
-    }
-    .input-area {
-      display: flex;
-      justify-content: center;
-      margin-top: 10px;
-    }
-    input[type="text"] {
-      width: 70%;
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-    }
-    button {
-      padding: 10px 20px;
-      margin-left: 10px;
-      border-radius: 6px;
-      border: none;
-      background: #ccc;
-      cursor: pointer;
-    }
-    .quick-options, .mood-select {
-      margin: 20px auto;
-      max-width: 700px;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .quick-options button {
-      background: rgba(255,255,255,0.1);
       color: #fff;
-      border: 1px solid #aaa;
-      padding: 6px 12px;
-      font-size: 14px;
-      border-radius: 8px;
+      margin-top: 100px;
+      margin-bottom: 20px;
+      text-shadow: 1px 1px 4px #000;
     }
+    .intro h1 {
+      font-size: 2em;
+      margin-bottom: 0.5em;
+    }
+    .intro p {
+      font-size: 1.2em;
+    }
+
+    .mood-select {
+      text-align: center;
+      margin: 10px 0;
+      z-index: 3;
+    }
+
     .mood-select select {
       padding: 6px 10px;
       border-radius: 6px;
       border: none;
       font-size: 16px;
     }
-    #messages {
-      max-height: 300px;
+
+    .quick-options {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 10px auto;
+      max-width: 900px;
+    }
+
+    .quick-options button {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      border: 1px solid #ccc;
+      margin: 4px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    #chatbox {
+      width: 90%;
+      max-width: 900px;
+      height: 50vh;
       overflow-y: auto;
-      margin-top: 20px;
+      margin: 20px auto 10px auto;
+      padding: 20px;
+      border-radius: 15px;
+      background: rgba(0,0,0,0.4);
+      color: #fff;
+      font-size: 1.1em;
+      line-height: 1.6;
     }
-    .message {
-      margin-bottom: 10px;
+
+    .message { margin-bottom: 10px; }
+    .user { color: #ffffff; font-weight: bold; }
+    .bot { font-style: italic; color: #e0e0e0; }
+
+    .input-area {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
     }
-    .user { font-weight: bold; color: #add; }
-    .bot { font-style: italic; color: #dfd; }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 60%;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      margin-right: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #eee;
+      border: none;
+      font-size: 1em;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #audio-control {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      z-index: 10;
+    }
+
+    #volume-bar {
+      writing-mode: bt-lr;
+      -webkit-appearance: slider-vertical;
+      width: 8px;
+      height: 100px;
+    }
+
+    #audio-icon {
+      font-size: 20px;
+      color: #fff;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
-  <div class="subtitle">
-    <h2>這是一場與自己的對話</h2>
-    <p>海般靜映，讓你照見內在深處的聲音與智慧</p>
+<video autoplay muted loop class="bg-video">
+  <source src="233867_medium.mp4" type="video/mp4">
+</video>
+
+<img src="still_reflection_logo.png" id="logo" />
+
+<div class="intro">
+  <h1>這是一場與自己的對話</h1>
+  <p>海般靜映，讓你照見內在深處的聲音與智慧</p>
+</div>
+
+<div class="mood-select">
+  <label for="mood">選擇語氣：</label>
+  <select id="mood">
+    <option value="auto">自動判斷（預設）</option>
+    <option value="海霧">靜心海霧</option>
+    <option value="靈性導引">靈性導引</option>
+    <option value="真實共鳴">真實共鳴</option>
+  </select>
+</div>
+
+<div class="quick-options" id="quick-options"></div>
+
+<div id="chatbox">
+  <div id="messages">
+    <div class="message bot"><em>這是一場與自己的對話，如果你願意，我會在這裡陪你。<br>你現在的心情是什麼？或有什麼想說的話，都可以開始⋯</em></div>
   </div>
-
-  <div class="mood-select">
-    <label for="mood">選擇對話語氣：</label>
-    <select id="mood">
-      <option value="auto">自動判斷（預設）</option>
-      <option value="海霧">靜心海霧</option>
-      <option value="靈性導引">靈性導引</option>
-      <option value="真實共鳴">真實共鳴</option>
-    </select>
+  <div class="input-area">
+    <input type="text" id="input" placeholder="留下你的心語…" />
+    <button onclick="sendMessage()">送出</button>
   </div>
+</div>
 
-  <div class="quick-options" id="quick-options"></div>
+<div id="audio-control">
+  <span id="audio-icon" onclick="toggleAudio()">🔈</span>
+  <input type="range" id="volume-bar" min="0" max="1" step="0.01" value="1" onchange="adjustVolume(this.value)" />
+</div>
 
-  <div id="chatbox">
-    <div id="messages">
-      <div class="message bot">seasoul：你好，我在這裡，願意靜靜陪你。你想從哪裡開始呢？</div>
-    </div>
-    <div class="input-area">
-      <input type="text" id="input" placeholder="留下你的心語…" />
-      <button onclick="sendMessage()">送出</button>
-    </div>
-  </div>
+<audio id="bgm" autoplay loop>
+  <source src="seasoul_mixed_bgm.mp3" type="audio/mpeg">
+</audio>
 
-  <script>
-    const allOptions = [
-      "我最近常有無力感",
-      "我有點想哭但哭不出來",
-      "我只是想被靜靜地理解",
-      "我不知道自己怎麼了",
-      "我好像失去了方向",
-      "我最近在反思自己",
-      "我有很多煩躁的感覺",
-      "我想讓自己放鬆下來",
-      "我覺得我太用力生活了",
-      "我想知道我內在在說什麼",
-      "我想學會怎麼接住自己",
-      "我只是想靜靜聽點話"
-    ];
+<script>
+  const bgm = document.getElementById("bgm");
+  const audioIcon = document.getElementById("audio-icon");
+  const allOptions = [
+    "我最近常有無力感", "我有點想哭但哭不出來", "我只是想被靜靜地理解",
+    "我不知道自己怎麼了", "我好像失去了方向", "我最近在反思自己",
+    "我有很多煩躁的感覺", "我想讓自己放鬆下來", "我覺得我太用力生活了",
+    "我想知道我內在在說什麼", "我想學會怎麼接住自己", "我只是想靜靜聽點話"
+  ];
 
-    function getRandomOptions(arr, n) {
-      const shuffled = arr.sort(() => 0.5 - Math.random());
-      return shuffled.slice(0, n);
+  function renderQuickOptions() {
+    const container = document.getElementById("quick-options");
+    const selected = allOptions.sort(() => 0.5 - Math.random()).slice(0, 4);
+    container.innerHTML = "";
+    selected.forEach(text => {
+      const btn = document.createElement("button");
+      btn.textContent = text;
+      btn.onclick = () => sendQuick(text);
+      container.appendChild(btn);
+    });
+  }
+
+  function toggleAudio() {
+    if (bgm.paused) {
+      bgm.play();
+      audioIcon.textContent = "🔈";
+    } else {
+      bgm.pause();
+      audioIcon.textContent = "🔇";
     }
+  }
 
-    function renderQuickOptions() {
-      const quickOptions = document.getElementById("quick-options");
-      const randomOptions = getRandomOptions(allOptions, 4);
-      quickOptions.innerHTML = "";
-      randomOptions.forEach(text => {
-        const btn = document.createElement("button");
-        btn.textContent = text;
-        btn.onclick = () => sendQuick(text);
-        quickOptions.appendChild(btn);
-      });
-    }
+  function adjustVolume(val) {
+    bgm.volume = val;
+  }
 
-    renderQuickOptions();
+  function sendQuick(text) {
+    document.getElementById('input').value = text;
+    sendMessage();
+  }
 
-    async function sendMessage() {
-      const input = document.getElementById("input");
-      const mood = document.getElementById("mood").value;
-      const text = input.value.trim();
-      if (!text) return;
+  async function sendMessage() {
+    const input = document.getElementById("input");
+    const text = input.value.trim();
+    const mood = document.getElementById("mood").value;
+    if (!text) return;
 
-      const messages = document.getElementById("messages");
-      messages.innerHTML += '<div class="message user">你：' + text + '</div>';
-      messages.innerHTML += '<div class="message bot" id="loading">seasoul 正在傾聽你…</div>';
-      input.value = '';
+    const messages = document.getElementById("messages");
+    messages.innerHTML += '<div class="message user">你：' + text + '</div>';
+    messages.innerHTML += '<div class="message bot" id="loading">seasoul 正在傾聽你…</div>';
+    input.value = '';
 
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, mood: mood === "auto" ? undefined : mood })
-      });
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text, mood: mood === "auto" ? undefined : mood })
+    });
 
-      const data = await res.json();
-      document.getElementById("loading").remove();
-      messages.innerHTML += '<div class="message bot">seasoul：' + data.reply + '</div>';
-      messages.scrollTop = messages.scrollHeight;
-    }
+    const data = await res.json();
+    document.getElementById("loading").remove();
+    messages.innerHTML += '<div class="message bot">seasoul：' + data.reply + '</div>';
+    messages.scrollTop = messages.scrollHeight;
+  }
 
-    function sendQuick(text) {
-      document.getElementById('input').value = text;
-      sendMessage();
-    }
-  </script>
+  window.onload = renderQuickOptions;
+</script>
 
 </body>
 </html>
