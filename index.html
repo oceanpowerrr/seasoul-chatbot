@@ -173,13 +173,19 @@
     </div>
   </div>
 
+  <div id="controls">
+    <img id="toggle" class="icon" src="https://img.icons8.com/ios-filled/50/ffffff/speaker.png" alt="音量" onclick="toggleAudio()" />
+    <input type="range" id="volume" min="0" max="1" step="0.01" value="0.3" onchange="setVolume(this.value)">
+  </div>
+
   <audio id="bgm" autoplay loop>
     <source src="seasoul_mixed_bgm.mp3" type="audio/mpeg" />
   </audio>
 
   <script>
-    const messagesBox = document.getElementById("messages");
     const bgm = document.getElementById("bgm");
+    const toggleBtn = document.getElementById("toggle");
+    const messagesBox = document.getElementById("messages");
 
     window.onload = () => {
       const welcome = `
@@ -189,6 +195,20 @@
           你現在的心情是什麼？或有什麼想說的話，都可以開始…
         </div>`;
       messagesBox.innerHTML += welcome;
+    };
+
+    function toggleAudio() {
+      if (bgm.paused) {
+        bgm.play();
+        toggleBtn.src = "https://img.icons8.com/ios-filled/50/ffffff/speaker.png";
+      } else {
+        bgm.pause();
+        toggleBtn.src = "https://img.icons8.com/ios-filled/50/ffffff/mute.png";
+      }
+    }
+
+    function setVolume(val) {
+      bgm.volume = val;
     }
 
     function sendQuick(text) {
