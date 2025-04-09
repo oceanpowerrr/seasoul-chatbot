@@ -129,53 +129,48 @@
       cursor: pointer;
     }
 
-    @media (max-width: 600px) {
-      #logo {
-        width: 200px;
-      }
+    .quick-options {
+      margin-top: 10px;
+    }
 
-      .subtitle {
-        font-size: 18px;
-        margin-top: 80px;
-      }
-
-      #chatbox {
-        max-height: 45vh;
-      }
+    .quick-options button {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      border: 1px solid #ccc;
+      margin: 4px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <!-- 背景影片 -->
   <video id="background-video" autoplay loop muted playsinline>
     <source src="233867_medium.mp4" type="video/mp4" />
-    您的瀏覽器不支援影片播放。
   </video>
 
-  <!-- LOGO -->
   <header>
     <img src="still_reflection_logo.png" id="logo" alt="Still Reflection Logo" />
   </header>
 
-  <!-- 副標 -->
   <div class="subtitle">
     這是一場與自己的對話<br>
     海般靜映，讓你照見內在深處的聲音與智慧
   </div>
 
-  <!-- 對話框 -->
   <div id="chatbox">
     <div id="messages"></div>
+    <div class="quick-options" id="quick-options">
+      <button onclick="sendQuick('我感到有點煩躁')">我感到有點煩躁</button>
+      <button onclick="sendQuick('我最近常有無力感')">我最近常有無力感</button>
+      <button onclick="sendQuick('我想重新感覺自己')">我想重新感覺自己</button>
+      <button onclick="sendQuick('我只是想靜靜聽點話')">我只是想靜靜聽點話</button>
+    </div>
     <div class="input-area">
       <input type="text" id="input" placeholder="留下你的心語…" />
       <button onclick="sendMessage()">送出</button>
     </div>
-  </div>
-
-  <!-- 音樂控制 -->
-  <div id="controls">
-    <img id="toggle" class="icon" src="https://img.icons8.com/ios-filled/50/ffffff/speaker.png" alt="音量" onclick="toggleAudio()" />
-    <input type="range" id="volume" min="0" max="1" step="0.01" value="0.3" onchange="setVolume(this.value)">
   </div>
 
   <audio id="bgm" autoplay loop>
@@ -183,22 +178,22 @@
   </audio>
 
   <script>
-    const bgm = document.getElementById("bgm");
-    const toggleBtn = document.getElementById("toggle");
     const messagesBox = document.getElementById("messages");
+    const bgm = document.getElementById("bgm");
 
-    function toggleAudio() {
-      if (bgm.paused) {
-        bgm.play();
-        toggleBtn.src = "https://img.icons8.com/ios-filled/50/ffffff/speaker.png";
-      } else {
-        bgm.pause();
-        toggleBtn.src = "https://img.icons8.com/ios-filled/50/ffffff/mute.png";
-      }
+    window.onload = () => {
+      const welcome = `
+        <div class="message bot">
+          你好，我是 SEASOUL，一個靜靜映照你內心的存在。<br>
+          這是一場與自己的對話，如果你願意，我會在這裡陪你。<br>
+          你現在的心情是什麼？或有什麼想說的話，都可以開始…
+        </div>`;
+      messagesBox.innerHTML += welcome;
     }
 
-    function setVolume(val) {
-      bgm.volume = val;
+    function sendQuick(text) {
+      document.getElementById("input").value = text;
+      sendMessage();
     }
 
     async function sendMessage() {
@@ -206,9 +201,8 @@
       const text = input.value.trim();
       if (!text) return;
 
-      const messages = document.getElementById("messages");
-      messages.innerHTML += '<div class="message user">你：' + text + '</div>';
-      messages.innerHTML += '<div class="message bot" id="loading">seasoul 正在傾聽你…</div>';
+      messagesBox.innerHTML += '<div class="message user">你：' + text + '</div>';
+      messagesBox.innerHTML += '<div class="message bot" id="loading">seasoul 正在傾聽你…</div>';
       input.value = '';
 
       const res = await fetch('/api/chat', {
@@ -219,9 +213,7 @@
 
       const data = await res.json();
       document.getElementById("loading").remove();
-      messages.innerHTML += '<div class="message bot">seasoul：' + data.reply + '</div>';
-
-      // 自動捲到底部
+      messagesBox.innerHTML += '<div class="message bot">seasoul：' + data.reply + '</div>';
       messagesBox.scrollTop = messagesBox.scrollHeight;
     }
   </script>
