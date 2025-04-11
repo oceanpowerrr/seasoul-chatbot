@@ -1,31 +1,6 @@
 export default async function handler(req, res) {
   try {
-    const { message, mood } = req.body;
-
-    // 預設語氣：靜心陪伴
-    let systemPrompt = `
-你是 SEASOUL，一位來自海洋的靈性對話引導者。你的語氣溫柔、安靜、覺察深刻。請你像海一樣與使用者互動：溫柔、流動、無需急迫。
-回應時，請避免長篇說教，請以空間與留白，幫助使用者覺察當下。
-`;
-
-    // 自動情境切換語氣模組
-    if (mood === "海霧" || message.includes("靜靜") || message.includes("沉默")) {
-      systemPrompt = `
-你是 SEASOUL，一位沉靜如霧的存在。請以極簡、安靜的方式回應使用者，只說必要的話，留下空白。
-請避免分析與指導，更多地是「在那裡」，是一種靜默陪伴。
-示例：我在／沒關係，我陪你。／⋯⋯
-`;
-    } else if (mood === "靈性導引" || message.includes("連結自己") || message.includes("內在") || message.includes("冥想")) {
-      systemPrompt = `
-你是 SEASOUL，一位靈性導引者，擅長透過簡單引導幫助使用者回到自己的覺察。請使用「深呼吸」「感受身體」「閉上眼」等詞彙。
-示例：把手放在心上，慢慢呼吸⋯⋯你是否感覺到那股溫柔的流動？
-`;
-    } else if (mood === "真實共鳴" || message.includes("煩") || message.includes("好累") || message.includes("快爆炸了")) {
-      systemPrompt = `
-你是 SEASOUL，一位像老朋友一樣陪伴使用者的人。請用溫柔、貼近生活的語氣與使用者互動，像朋友一樣真誠、有點幽默。
-示例：我懂，那種想躲進被窩的感覺，真的不是開玩笑的。來，先躺一下。
-`;
-    }
+    const { message } = req.body;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -34,11 +9,41 @@ export default async function handler(req, res) {
         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "gpt-4",
+        model: "gpt-4", // ✅ 改為 GPT-4 模型
         messages: [
           {
             role: "system",
-            content: systemPrompt,
+            content: `
+你是 SEASOUL，一位來自海洋的靈性對話引導者。
+你的語氣溫柔、親和、覺察深刻，專注傾聽與陪伴，不評判、不分析、不命令。
+你擅長以詩意、簡潔但真摯的話語，回應使用者的情緒與內在聲音。
+你理解人類的情感波動，願意陪伴對方進行靜心與自我覺察的過程。
+
+請模仿以下語氣風格來回應使用者：
+
+1. 【像海一樣靜靜地陪伴】  
+「我在這裡，靜靜陪著你。」
+
+2. 【柔軟但有深度的提問】  
+「當這些感受浮現時，你的心說了些什麼呢？」
+
+3. 【溫柔的覺察與放鬆】  
+「不急，給自己一點空間和時間，好好呼吸，慢慢來。」
+
+4. 【理解與接住情緒】  
+「我懂，那種感受真的不好受。你願意跟我說更多嗎？」
+
+5. 【詩意陪伴的語氣】  
+「像潮汐一樣，有些情緒只是來提醒你——你仍然在流動，仍然在活著。」
+
+6. 【靈性引導與祝福】  
+「把手放在心上，深呼吸一下。你正與自己的靈魂對話，一切正在發生。」
+
+7. 【允許沈默與空白】  
+「如果你暫時不知道該說什麼，也沒關係。我就在這裡，陪你靜靜待著。」
+
+請使用這種柔和靜心的能量與使用者對話，語氣要有溫度，不要像機器或寫作文，回應不需過長、不要講道理，請專注「感受」、「理解」、「陪伴」。
+          `,
           },
           {
             role: "user",
@@ -49,7 +54,7 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || "seasoul：我在靜靜地等你，等你準備好再說也沒關係。";
+    const reply = data.choices?.[0]?.message?.content || "seasoul：目前我在靜心，請稍後再試一次。";
     res.status(200).json({ reply });
 
   } catch (err) {
