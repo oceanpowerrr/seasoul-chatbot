@@ -41,19 +41,6 @@
       font-size: 1.2em;
     }
 
-    .mood-select {
-      text-align: center;
-      margin: 10px 0;
-      z-index: 3;
-    }
-
-    .mood-select select {
-      padding: 6px 10px;
-      border-radius: 6px;
-      border: none;
-      font-size: 16px;
-    }
-
     .quick-options {
       display: flex;
       justify-content: center;
@@ -154,21 +141,11 @@
   <p>海般靜映，讓你照見內在深處的聲音與智慧</p>
 </div>
 
-<div class="mood-select">
-  <label for="mood">選擇語氣：</label>
-  <select id="mood">
-    <option value="auto">自動判斷（預設）</option>
-    <option value="海霧">靜心海霧</option>
-    <option value="靈性導引">靈性導引</option>
-    <option value="真實共鳴">真實共鳴</option>
-  </select>
-</div>
-
 <div class="quick-options" id="quick-options"></div>
 
 <div id="chatbox">
   <div id="messages">
-    <div class="message bot"><em>這是一場與自己的對話，如果你願意，我會在這裡陪你。<br>你現在的心情是什麼？或有什麼想說的話，都可以開始⋯</em></div>
+    <div class="message bot"><em>這是一場與自己的對話，如果你願意，我會在這裡陪你。你現在的心情是什麼？</em></div>
   </div>
   <div class="input-area">
     <input type="text" id="input" placeholder="留下你的心語…" />
@@ -186,13 +163,19 @@
 </audio>
 
 <script>
-  const bgm = document.getElementById("bgm");
-  const audioIcon = document.getElementById("audio-icon");
   const allOptions = [
-    "我最近常有無力感", "我有點想哭但哭不出來", "我只是想被靜靜地理解",
-    "我不知道自己怎麼了", "我好像失去了方向", "我最近在反思自己",
-    "我有很多煩躁的感覺", "我想讓自己放鬆下來", "我覺得我太用力生活了",
-    "我想知道我內在在說什麼", "我想學會怎麼接住自己", "我只是想靜靜聽點話"
+    "我最近常有無力感",
+    "我覺得自己好像什麼都做不好",
+    "我想逃離現在的生活",
+    "我有點想哭但哭不出來",
+    "我很焦躁，不知道為什麼",
+    "我覺得孤單",
+    "我失去了目標感",
+    "我想讓自己放鬆下來",
+    "我最近在反思自己",
+    "我想知道我內在在說什麼",
+    "我想學會怎麼接住自己",
+    "我只是想靜靜聽點話"
   ];
 
   function renderQuickOptions() {
@@ -208,17 +191,19 @@
   }
 
   function toggleAudio() {
+    const bgm = document.getElementById("bgm");
+    const icon = document.getElementById("audio-icon");
     if (bgm.paused) {
       bgm.play();
-      audioIcon.textContent = "🔈";
+      icon.textContent = "🔈";
     } else {
       bgm.pause();
-      audioIcon.textContent = "🔇";
+      icon.textContent = "🔇";
     }
   }
 
   function adjustVolume(val) {
-    bgm.volume = val;
+    document.getElementById("bgm").volume = val;
   }
 
   function sendQuick(text) {
@@ -229,7 +214,6 @@
   async function sendMessage() {
     const input = document.getElementById("input");
     const text = input.value.trim();
-    const mood = document.getElementById("mood").value;
     if (!text) return;
 
     const messages = document.getElementById("messages");
@@ -240,7 +224,7 @@
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: text, mood: mood === "auto" ? undefined : mood })
+      body: JSON.stringify({ message: text })
     });
 
     const data = await res.json();
