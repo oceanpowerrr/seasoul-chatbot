@@ -1,3 +1,4 @@
+<!-- 本段為 index.html 主體 -->
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -33,13 +34,9 @@
       margin-bottom: 20px;
       text-shadow: 1px 1px 4px #000;
     }
-    .intro h1 {
-      font-size: 2em;
-      margin-bottom: 0.5em;
-    }
-    .intro p {
-      font-size: 1.2em;
-    }
+
+    .intro h1 { font-size: 2em; margin-bottom: 0.5em; }
+    .intro p { font-size: 1.2em; }
 
     .quick-options {
       display: flex;
@@ -54,7 +51,6 @@
       background: rgba(255,255,255,0.2);
       color: #fff;
       border: 1px solid #ccc;
-      margin: 4px;
       padding: 6px 12px;
       border-radius: 6px;
       font-size: 14px;
@@ -144,9 +140,7 @@
 <div class="quick-options" id="quick-options"></div>
 
 <div id="chatbox">
-  <div id="messages">
-    <div class="message bot"><em>這是一場與自己的對話，如果你願意，我會在這裡陪你。你現在的心情是什麼？</em></div>
-  </div>
+  <div id="messages"></div>
   <div class="input-area">
     <input type="text" id="input" placeholder="留下你的心語…" />
     <button onclick="sendMessage()">送出</button>
@@ -206,6 +200,16 @@
     document.getElementById("bgm").volume = val;
   }
 
+  function saveMessages() {
+    const html = document.getElementById("messages").innerHTML;
+    localStorage.setItem("seasoul_history", html);
+  }
+
+  function loadMessages() {
+    const saved = localStorage.getItem("seasoul_history");
+    document.getElementById("messages").innerHTML = saved || '<div class="message bot"><em>這是一場與自己的對話，如果你願意，我會在這裡陪你。你現在的心情是什麼？</em></div>';
+  }
+
   function sendQuick(text) {
     document.getElementById('input').value = text;
     sendMessage();
@@ -220,6 +224,7 @@
     messages.innerHTML += '<div class="message user">你：' + text + '</div>';
     messages.innerHTML += '<div class="message bot" id="loading">seasoul 正在傾聽你…</div>';
     input.value = '';
+    saveMessages();
 
     const res = await fetch('/api/chat', {
       method: 'POST',
@@ -231,9 +236,13 @@
     document.getElementById("loading").remove();
     messages.innerHTML += '<div class="message bot">seasoul：' + data.reply + '</div>';
     messages.scrollTop = messages.scrollHeight;
+    saveMessages();
   }
 
-  window.onload = renderQuickOptions;
+  window.onload = () => {
+    loadMessages();
+    renderQuickOptions();
+  };
 </script>
 
 </body>
