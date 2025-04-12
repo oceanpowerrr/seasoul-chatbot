@@ -7,7 +7,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Serif TC', serif; }
-    body, html { height: 100%; overflow: hidden; background: #000; }
+   body, html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #000;
+  overflow-x: hidden; /* ✅ 只禁止橫向，保留垂直 */
+}
     video.bg-video {
       position: fixed;
       top: 0; left: 0;
