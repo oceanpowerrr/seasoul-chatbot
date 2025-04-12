@@ -1,4 +1,3 @@
-<!-- 本段為 index.html 主體 -->
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -9,7 +8,6 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Serif TC', serif; }
     body, html { height: 100%; overflow: hidden; }
-
     video.bg-video {
       position: fixed;
       top: 0; left: 0;
@@ -18,7 +16,6 @@
       object-fit: cover;
       z-index: -1;
     }
-
     #logo {
       position: absolute;
       top: 30px;
@@ -26,7 +23,6 @@
       width: 180px;
       z-index: 2;
     }
-
     .intro {
       text-align: center;
       color: #fff;
@@ -34,10 +30,8 @@
       margin-bottom: 20px;
       text-shadow: 1px 1px 4px #000;
     }
-
     .intro h1 { font-size: 2em; margin-bottom: 0.5em; }
     .intro p { font-size: 1.2em; }
-
     .quick-options {
       display: flex;
       justify-content: center;
@@ -46,7 +40,6 @@
       margin: 10px auto;
       max-width: 900px;
     }
-
     .quick-options button {
       background: rgba(255,255,255,0.2);
       color: #fff;
@@ -56,7 +49,6 @@
       font-size: 14px;
       cursor: pointer;
     }
-
     #chatbox {
       width: 90%;
       max-width: 900px;
@@ -70,17 +62,15 @@
       font-size: 1.1em;
       line-height: 1.6;
     }
-
     .message { margin-bottom: 10px; }
     .user { color: #ffffff; font-weight: bold; }
-    .bot { font-style: italic; color: #e0e0e0; }
+    .seasoul { font-style: italic; color: #e0e0e0; }
 
     .input-area {
       display: flex;
       justify-content: center;
       margin-bottom: 20px;
     }
-
     input[type="text"] {
       padding: 10px;
       width: 60%;
@@ -89,7 +79,6 @@
       font-size: 1em;
       margin-right: 10px;
     }
-
     button {
       padding: 10px 20px;
       background-color: #eee;
@@ -122,6 +111,18 @@
       color: #fff;
       cursor: pointer;
     }
+
+    #export-btn {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -152,36 +153,86 @@
   <input type="range" id="volume-bar" min="0" max="1" step="0.01" value="1" onchange="adjustVolume(this.value)" />
 </div>
 
+<button id="export-btn" onclick="exportChat()">匯出對話</button>
+
 <audio id="bgm" autoplay loop>
   <source src="seasoul_mixed_bgm.mp3" type="audio/mpeg">
 </audio>
-
 <script>
-  const allOptions = [
+  const quickOptions = [
     "我最近常有無力感",
-    "我覺得自己好像什麼都做不好",
     "我想逃離現在的生活",
-    "我有點想哭但哭不出來",
-    "我很焦躁，不知道為什麼",
-    "我覺得孤單",
     "我失去了目標感",
-    "我想讓自己放鬆下來",
-    "我最近在反思自己",
-    "我想知道我內在在說什麼",
-    "我想學會怎麼接住自己",
     "我只是想靜靜聽點話"
   ];
 
   function renderQuickOptions() {
     const container = document.getElementById("quick-options");
-    const selected = allOptions.sort(() => 0.5 - Math.random()).slice(0, 4);
+    const selected = quickOptions.sort(() => 0.5 - Math.random()).slice(0, 4);
     container.innerHTML = "";
     selected.forEach(text => {
       const btn = document.createElement("button");
       btn.textContent = text;
-      btn.onclick = () => sendQuick(text);
+      btn.onclick = () => {
+        document.getElementById("input").value = text;
+        sendMessage();
+      };
       container.appendChild(btn);
     });
+  }
+
+  function renderMessages() {
+    const history = JSON.parse(localStorage.getItem("seasoul_log") || "[]");
+    const messages = document.getElementById("messages");
+    messages.innerHTML = "";
+    history.forEach(entry => {
+      const div = document.createElement("div");
+      div.className = "message " + entry.role;
+      div.textContent = (entry.role === "user" ? "你：" : "seasoul：") + entry.content;
+      messages.appendChild(div);
+    });
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function saveMessage(role, content) {
+    let history = JSON.parse(localStorage.getItem("seasoul_log") || "[]");
+    history.push({ role, content, timestamp: new Date().toISOString() });
+    localStorage.setItem("seasoul_log", JSON.stringify(history));
+    renderMessages();
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById("input");
+    const text = input.value.trim();
+    if (!text) return;
+    saveMessage("user", text);
+
+    const messages = document.getElementById("messages");
+    const loading = document.createElement("div");
+    loading.className = "message seasoul";
+    loading.id = "loading";
+    loading.innerHTML = "seasoul 正在傾聽你…";
+    messages.appendChild(loading);
+
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text })
+    });
+
+    const data = await res.json();
+    document.getElementById("loading").remove();
+    saveMessage("seasoul", data.reply);
+  }
+
+  function exportChat() {
+    const history = JSON.parse(localStorage.getItem("seasoul_log") || "[]");
+    const text = history.map(h => `[${h.role}] ${h.content}`).join("\\n\\n");
+    const blob = new Blob([text], { type: 'text/plain' });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "seasoul_conversation.txt";
+    link.click();
   }
 
   function toggleAudio() {
@@ -200,48 +251,9 @@
     document.getElementById("bgm").volume = val;
   }
 
-  function saveMessages() {
-    const html = document.getElementById("messages").innerHTML;
-    localStorage.setItem("seasoul_history", html);
-  }
-
-  function loadMessages() {
-    const saved = localStorage.getItem("seasoul_history");
-    document.getElementById("messages").innerHTML = saved || '<div class="message bot"><em>這是一場與自己的對話，如果你願意，我會在這裡陪你。你現在的心情是什麼？</em></div>';
-  }
-
-  function sendQuick(text) {
-    document.getElementById('input').value = text;
-    sendMessage();
-  }
-
-  async function sendMessage() {
-    const input = document.getElementById("input");
-    const text = input.value.trim();
-    if (!text) return;
-
-    const messages = document.getElementById("messages");
-    messages.innerHTML += '<div class="message user">你：' + text + '</div>';
-    messages.innerHTML += '<div class="message bot" id="loading">seasoul 正在傾聽你…</div>';
-    input.value = '';
-    saveMessages();
-
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: text })
-    });
-
-    const data = await res.json();
-    document.getElementById("loading").remove();
-    messages.innerHTML += '<div class="message bot">seasoul：' + data.reply + '</div>';
-    messages.scrollTop = messages.scrollHeight;
-    saveMessages();
-  }
-
   window.onload = () => {
-    loadMessages();
     renderQuickOptions();
+    renderMessages();
   };
 </script>
 
