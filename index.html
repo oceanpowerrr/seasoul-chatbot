@@ -7,18 +7,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Serif TC', serif; }
-   body, html {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  background: #000;
-  overflow-x: hidden; /* ✅ 只禁止橫向，保留垂直 */
-}
+    html, body {
+      height: 100%;
+      background: #000;
+      overflow-x: hidden;
+    }
     video.bg-video {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0;
+      left: 0;
+      min-width: 100%;
+      min-height: 100%;
       object-fit: cover;
       z-index: -1;
     }
@@ -93,6 +92,7 @@
       border-radius: 5px;
       cursor: pointer;
     }
+
     #audio-control {
       position: absolute;
       bottom: 20px;
@@ -128,12 +128,12 @@
   </style>
 </head>
 <body>
-<video autoplay muted loop class="bg-video">
+<video autoplay muted loop playsinline class="bg-video">
   <source src="233867_medium.mp4" type="video/mp4">
+  您的瀏覽器不支援背景影片。
 </video>
 
 <img src="still_reflection_logo.png" id="logo" />
-
 <div class="intro">
   <h1>這是一場與自己的對話</h1>
   <p>海般靜映，讓你照見內在深處的聲音與智慧</p>
@@ -165,12 +165,10 @@
     "我想逃離現在的生活",
     "我失去了目標感",
     "我只是想靜靜聽點話",
-    "為什麼我總覺得不夠好",
-    "我想放下控制一切的念頭",
-    "我害怕面對自己的情緒",
-    "我渴望被理解卻不敢表達",
-    "我想找回內在的穩定感",
-    "我正在經歷很大的轉變"
+    "我害怕自己會崩潰",
+    "我渴望安靜與支持",
+    "我想釋放一切但做不到",
+    "我想重新找回我自己"
   ];
 
   function renderQuickOptions() {
@@ -253,7 +251,7 @@
     renderMessages();
   };
 </script>
-<!-- 🔮 Modal 彈出視窗 -->
+<!-- 🔮 Modal 視窗：萃取靈魂對話 -->
 <div id="export-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; align-items:center; justify-content:center;">
   <div style="background:#fff; padding:30px; max-width:700px; width:90%; border-radius:10px; box-shadow:0 0 15px #333; overflow-y:auto; max-height:80vh;">
     <h2 style="font-family:'Noto Serif TC'; margin-bottom: 10px;">🌿 萃取你的靈魂對話</h2>
@@ -395,16 +393,44 @@ function generateImage(lines, filename) {
 
   document.body.appendChild(container);
   html2canvas(container).then(canvas => {
+    const imageData = canvas.toDataURL("image/png");
     const link = document.createElement("a");
-    link.href = canvas.toDataURL("image/png");
+    link.href = imageData;
     link.download = filename;
     link.click();
     document.body.removeChild(container);
+
+    // 分享提示
+    const shareBox = document.createElement("div");
+    shareBox.style.position = "fixed";
+    shareBox.style.bottom = "40px";
+    shareBox.style.right = "20px";
+    shareBox.style.background = "#fff";
+    shareBox.style.border = "1px solid #ccc";
+    shareBox.style.padding = "10px";
+    shareBox.style.borderRadius = "8px";
+    shareBox.style.boxShadow = "0 0 8px rgba(0,0,0,0.2)";
+    shareBox.innerHTML = `
+      <p style="margin-bottom: 8px;">📤 分享這張圖文卡：</p>
+      <button onclick="shareToLine('${imageData}')" style="margin-right: 8px;">LINE</button>
+      <button onclick="alert('請手動將圖片上傳至 Instagram 貼文或限動。')">Instagram</button>
+    `;
+    document.body.appendChild(shareBox);
+
+    setTimeout(() => {
+      document.body.removeChild(shareBox);
+    }, 10000);
   });
+}
+
+function shareToLine(imageData) {
+  const encodedImage = encodeURIComponent(imageData);
+  const lineUrl = `https://social-plugins.line.me/lineit/share?url=${encodedImage}`;
+  window.open(lineUrl, '_blank');
 }
 </script>
 
-<!-- 套件引入 -->
+<!-- 載入繪圖與 PDF 套件 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
