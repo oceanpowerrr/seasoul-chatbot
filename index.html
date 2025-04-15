@@ -434,5 +434,16 @@ function shareToLine(imageData) {
 <!-- 載入繪圖與 PDF 套件 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+  const video = document.querySelector(".bg-video");
+  video.addEventListener("loadeddata", () => {
+    console.log("✅ 背景影片已成功載入！");
+  });
+
+  video.addEventListener("error", () => {
+    console.error("❌ 背景影片載入失敗！");
+  });
+</script>
+
 </body>
 </html>
