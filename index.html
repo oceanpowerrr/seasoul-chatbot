@@ -35,7 +35,9 @@
       margin-top: 100px;
       margin-bottom: 20px;
       text-shadow: 1px 1px 4px #000;
-    }
+        z-index: 1; /* 加上這一行 */
+  position: relative; /* z-index 有效需要加 position */
+}
     .intro h1 { font-size: 2em; margin-bottom: 0.5em; }
     .intro p { font-size: 1.2em; }
     .quick-options {
@@ -67,7 +69,9 @@
       color: #fff;
       font-size: 1.1em;
       line-height: 1.6;
-    }
+        z-index: 1; /* 加上這一行 */
+  position: relative; /* z-index 有效需要加 position */
+}
     .message { margin-bottom: 10px; }
     .user { color: #ffffff; font-weight: bold; }
     .seasoul { font-style: italic; color: #e0e0e0; }
