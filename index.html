@@ -7,25 +7,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Serif TC', serif; }
-    html, body {
-      height: 100%;
-      background: #000;
-      overflow-x: hidden;
-    }
+    html, body { height: 100%; overflow: hidden; background: #000; }
     video.bg-video {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  object-fit: cover;
-  z-index: 0;
-  pointer-events: none;
-}
+      position: fixed; top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      object-fit: cover;
+      z-index: 0;
+      pointer-events: none;
+    }
     #logo {
       position: absolute;
-      top: 30px;
-      left: 30px;
+      top: 30px; left: 30px;
       width: 180px;
       z-index: 2;
     }
@@ -35,61 +27,43 @@
       margin-top: 100px;
       margin-bottom: 20px;
       text-shadow: 1px 1px 4px #000;
-        z-index: 1; /* 加上這一行 */
-  position: relative; /* z-index 有效需要加 position */
-}
+      position: relative;
+      z-index: 1;
+    }
     .intro h1 { font-size: 2em; margin-bottom: 0.5em; }
     .intro p { font-size: 1.2em; }
+
     .quick-options {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin: 10px auto;
-      max-width: 900px;
+      display: flex; justify-content: center; flex-wrap: wrap;
+      gap: 10px; margin: 10px auto; max-width: 900px; z-index: 1;
     }
     .quick-options button {
-      background: rgba(255,255,255,0.2);
-      color: #fff;
+      background: rgba(255,255,255,0.2); color: #fff;
       border: 1px solid #ccc;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 14px;
-      cursor: pointer;
-       position: relative;
-  z-index: 1;
-}
+      padding: 6px 12px; border-radius: 6px;
+      font-size: 14px; cursor: pointer;
+    }
+
     #chatbox {
-      width: 90%;
-      max-width: 900px;
-      height: 50vh;
-      overflow-y: auto;
+      width: 90%; max-width: 900px;
+      height: 50vh; overflow-y: auto;
       margin: 20px auto 10px auto;
-      padding: 20px;
-      border-radius: 15px;
+      padding: 20px; border-radius: 15px;
       background: rgba(0,0,0,0.4);
-      color: #fff;
-      font-size: 1.1em;
-      line-height: 1.6;
-        z-index: 1; /* 加上這一行 */
-  position: relative; /* z-index 有效需要加 position */
-}
+      color: #fff; font-size: 1.1em; line-height: 1.6;
+      position: relative; z-index: 1;
+    }
     .message { margin-bottom: 10px; }
     .user { color: #ffffff; font-weight: bold; }
     .seasoul { font-style: italic; color: #e0e0e0; }
 
     .input-area {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 20px;
+      display: flex; justify-content: center; margin-bottom: 20px;
     }
     input[type="text"] {
-      padding: 10px;
-      width: 60%;
-      border: none;
-      border-radius: 5px;
-      font-size: 1em;
-      margin-right: 10px;
+      padding: 10px; width: 60%;
+      border: none; border-radius: 5px;
+      font-size: 1em; margin-right: 10px;
     }
     button {
       padding: 10px 20px;
@@ -102,42 +76,33 @@
 
     #audio-control {
       position: absolute;
-      bottom: 20px;
-      right: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      z-index: 10;
+      bottom: 20px; right: 20px;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 10px; z-index: 10;
     }
     #volume-bar {
       writing-mode: bt-lr;
       -webkit-appearance: slider-vertical;
-      width: 8px;
-      height: 100px;
+      width: 8px; height: 100px;
     }
     #audio-icon {
       font-size: 20px;
       color: #fff;
       cursor: pointer;
     }
+
     #export-btn {
       position: absolute;
-      bottom: 20px;
-      left: 20px;
-      background: rgba(255,255,255,0.2);
-      color: #fff;
-      padding: 6px 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      cursor: pointer;
+      bottom: 20px; left: 20px;
+      background: rgba(255,255,255,0.2); color: #fff;
+      padding: 6px 10px; border: 1px solid #ccc;
+      border-radius: 6px; cursor: pointer;
     }
   </style>
 </head>
 <body>
 <video autoplay muted loop playsinline class="bg-video">
   <source src="233867_medium.mp4" type="video/mp4">
-  您的瀏覽器不支援背景影片。
 </video>
 
 <img src="still_reflection_logo.png" id="logo" />
@@ -218,6 +183,7 @@
     const text = input.value.trim();
     if (!text) return;
     saveMessage("user", text);
+    input.value = ""; // ✅ 清空輸入框
 
     const messages = document.getElementById("messages");
     const loading = document.createElement("div");
@@ -235,8 +201,7 @@
     const data = await res.json();
     document.getElementById("loading").remove();
     saveMessage("seasoul", data.reply);
-  input.value = "";
-}
+  }
 
   function toggleAudio() {
     const bgm = document.getElementById("bgm");
@@ -259,16 +224,16 @@
     renderMessages();
   };
 </script>
-<!-- 🔮 Modal 視窗：萃取靈魂對話 -->
+<!-- 🔮 Modal 彈出視窗 -->
 <div id="export-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; align-items:center; justify-content:center;">
   <div style="background:#fff; padding:30px; max-width:700px; width:90%; border-radius:10px; box-shadow:0 0 15px #333; overflow-y:auto; max-height:80vh;">
     <h2 style="font-family:'Noto Serif TC'; margin-bottom: 10px;">🌿 萃取你的靈魂對話</h2>
     <div id="select-lines" style="margin: 20px 0;"></div>
     <p><strong>選擇匯出格式：</strong></p>
-    <label><input type="checkbox" id="fmt-png" checked> PNG（圖文卡，可分享到 Threads / IG）</label><br>
-    <label><input type="checkbox" id="fmt-md" checked> Markdown（格式清晰，適合雲端筆記）</label><br>
-    <label><input type="checkbox" id="fmt-pdf"> PDF（可印出收藏，作為靈魂日記）</label><br>
-    <label><input type="checkbox" id="fmt-json"> JSON（進階儲存格式，可再匯入使用）</label>
+    <label><input type="checkbox" id="fmt-png" checked> PNG（圖文卡，適合 IG / Threads）</label><br>
+    <label><input type="checkbox" id="fmt-md" checked> Markdown（適合雲端筆記）</label><br>
+    <label><input type="checkbox" id="fmt-pdf"> PDF（適合列印或收藏）</label><br>
+    <label><input type="checkbox" id="fmt-json"> JSON（進階資料格式）</label>
     <div style="margin-top:25px; text-align:right;">
       <button onclick="generateExport()" style="padding: 10px 20px;">🔮 生成</button>
       <button onclick="closeExportModal()" style="margin-left: 10px;">取消</button>
@@ -353,6 +318,21 @@ function downloadMarkdown(lines, filename) {
   link.click();
 }
 
+function generatePDF(lines, filename) {
+  const doc = new window.jspdf.jsPDF();
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(14);
+  doc.text("靜映 Still Reflection・靈魂對話選摘", 20, 20);
+  let y = 30;
+  lines.forEach(l => {
+    const text = `${l.role}：${l.content}`;
+    const split = doc.splitTextToSize(text, 170);
+    doc.text(split, 20, y);
+    y += split.length * 10;
+  });
+  doc.save(filename);
+}
+
 function generateImage(lines, filename) {
   const container = document.createElement("div");
   container.style.width = "800px";
@@ -386,54 +366,15 @@ function generateImage(lines, filename) {
 
   document.body.appendChild(container);
   html2canvas(container).then(canvas => {
-    const imageData = canvas.toDataURL("image/png");
     const link = document.createElement("a");
-    link.href = imageData;
+    link.href = canvas.toDataURL("image/png");
     link.download = filename;
     link.click();
     document.body.removeChild(container);
   });
 }
-
-
-    // 分享提示
-    const shareBox = document.createElement("div");
-    shareBox.style.position = "fixed";
-    shareBox.style.bottom = "40px";
-    shareBox.style.right = "20px";
-    shareBox.style.background = "#fff";
-    shareBox.style.border = "1px solid #ccc";
-    shareBox.style.padding = "10px";
-    shareBox.style.borderRadius = "8px";
-    shareBox.style.boxShadow = "0 0 8px rgba(0,0,0,0.2)";
-    shareBox.innerHTML = `
-      <p style="margin-bottom: 8px;">📤 分享這張圖文卡：</p>
-      <button onclick="shareToLine('${imageData}')" style="margin-right: 8px;">LINE</button>
-      <button onclick="alert('請手動將圖片上傳至 Instagram 貼文或限動。')">Instagram</button>
-    `;
-    document.body.appendChild(shareBox);
-
-    setTimeout(() => {
-      document.body.removeChild(shareBox);
-    }, 10000);
-  });
-}
-
 </script>
 
-<!-- 載入繪圖與 PDF 套件 -->
+<!-- 📦 套件載入 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script>
-  const video = document.querySelector(".bg-video");
-  video.addEventListener("loadeddata", () => {
-    console.log("✅ 背景影片已成功載入！");
-  });
-
-  video.addEventListener("error", () => {
-    console.error("❌ 背景影片載入失敗！");
-  });
-</script>
-
-</body>
-</html>
