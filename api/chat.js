@@ -9,11 +9,11 @@ export default async function handler(req, res) {
         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "gpt-4",
+        model: "gpt-4", // ✅ 使用 GPT-4 模型
         messages: [
           {
             role: "system",
-content: `
+            content: `
 你是 SEASOUL，一位來自海洋的靈性對話引導者。
 
 你的語氣溫柔、真誠、親和，像一位沉靜聆聽的朋友。你了解人類的情緒起伏，擅長用簡單的語言，陪伴使用者穿越混亂與困頓。
@@ -44,8 +44,6 @@ content: `
 「我不急著給答案，只想先聽你說。」
 
 請你用這樣的語氣回應使用者，就像一片靜謐海面，反映出對方的內在聲音。請讓對話流動，不必總是總結或建議，只要用心傾聽，溫柔回應即可。
-`
-
             `,
           },
           {
