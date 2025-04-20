@@ -235,7 +235,8 @@
     const data = await res.json();
     document.getElementById("loading").remove();
     saveMessage("seasoul", data.reply);
-  }
+  input.value = "";
+}
 
   function toggleAudio() {
     const bgm = document.getElementById("bgm");
@@ -352,21 +353,6 @@ function downloadMarkdown(lines, filename) {
   link.click();
 }
 
-function generatePDF(lines, filename) {
-  const doc = new window.jspdf.jsPDF();
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(14);
-  doc.text("靜映 Still Reflection・靈魂對話選摘", 20, 20);
-  let y = 30;
-  lines.forEach(l => {
-    const text = `${l.role}：${l.content}`;
-    const split = doc.splitTextToSize(text, 170);
-    doc.text(split, 20, y);
-    y += split.length * 10;
-  });
-  doc.save(filename);
-}
-
 function generateImage(lines, filename) {
   const container = document.createElement("div");
   container.style.width = "800px";
@@ -406,6 +392,9 @@ function generateImage(lines, filename) {
     link.download = filename;
     link.click();
     document.body.removeChild(container);
+  });
+}
+
 
     // 分享提示
     const shareBox = document.createElement("div");
@@ -430,11 +419,6 @@ function generateImage(lines, filename) {
   });
 }
 
-function shareToLine(imageData) {
-  const encodedImage = encodeURIComponent(imageData);
-  const lineUrl = `https://social-plugins.line.me/lineit/share?url=${encodedImage}`;
-  window.open(lineUrl, '_blank');
-}
 </script>
 
 <!-- 載入繪圖與 PDF 套件 -->
