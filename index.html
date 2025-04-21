@@ -190,30 +190,33 @@
     localStorage.setItem("seasoul_log", JSON.stringify(history));
     renderMessages();
   }
+async function sendMessage() {
+  const input = document.getElementById("input");
+  const text = input.value.trim();
+  if (!text) return;
 
-  async function sendMessage() {
-    const input = document.getElementById("input");
-    const text = input.value.trim();
-    if (!text) return;
-    saveMessage("user", text);
-    input.value = ""; // ✅ 清空輸入框
+  const mood = document.getElementById("mood")?.value || "auto"; // ✅ 取得語氣選單的值
 
-    const messages = document.getElementById("messages");
-    const loading = document.createElement("div");
-    loading.className = "message seasoul";
-    loading.id = "loading";
-    loading.innerHTML = "seasoul 正在傾聽你…";
-    messages.appendChild(loading);
+  saveMessage("user", text);
+  input.value = ""; // ✅ 清空輸入欄
 
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: text })
-    });
+  const messages = document.getElementById("messages");
+  const loading = document.createElement("div");
+  loading.className = "message seasoul";
+  loading.id = "loading";
+  loading.innerHTML = "seasoul 正在傾聽你…";
+  messages.appendChild(loading);
 
-    const data = await res.json();
-    document.getElementById("loading").remove();
-    saveMessage("seasoul", data.reply);
+  const res = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: text, mood: mood }) // ✅ 傳送語氣到後端
+  });
+
+  const data = await res.json();
+  document.getElementById("loading").remove();
+  saveMessage("seasoul", data.reply);
+
   }
 
   function toggleAudio() {
