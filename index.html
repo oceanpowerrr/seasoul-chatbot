@@ -115,13 +115,24 @@
 
 <div class="quick-options" id="quick-options"></div>
 
-<div id="chatbox">
+<div id="chatbox"> 
   <div id="messages"></div>
   <div class="input-area">
     <input type="text" id="input" placeholder="留下你的心語…" />
     <button onclick="sendMessage()">送出</button>
   </div>
+</div> <!-- 🎭 語氣選擇 -->
+<div class="mood-selector" style="text-align:center; margin: 20px auto;">
+  <label for="mood" style="color:white;">對話語氣：</label>
+  <select id="mood" style="padding:6px 10px; border-radius: 6px;">
+    <option value="auto">自動判斷</option>
+    <option value="真實共鳴">真實共鳴</option>
+    <option value="詩意靜默">詩意靜默</option>
+    <option value="靈性導引">靈性導引</option>
+    <option value="靜心海霧">靜心海霧</option>
+  </select>
 </div>
+
 
 <div id="audio-control">
   <span id="audio-icon" onclick="toggleAudio()">🔈</span>
