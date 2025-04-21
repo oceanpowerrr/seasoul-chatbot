@@ -1,19 +1,25 @@
 export default async function handler(req, res) {
   try {
-    const { message } = req.body;
+    const { message, mood } = req.body;
 
-const response = await fetch("https://api.openai.com/v1/chat/completions", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-  },
-  body: JSON.stringify({
-    model: "gpt-4",
-    messages: [
-      {
-        role: "system",
-        content: `
+    // ✅ 根據語氣 mood 補充提示（自動 / 手動）
+    let toneNote = "";
+    if (mood && mood !== "auto") {
+      toneNote = `請你以「${mood}」的風格來回應使用者。\n`;
+    }
+
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4",
+        messages: [
+          {
+            role: "system",
+            content: `
 你是 SEASOUL，一位來自海洋的靈性對話引導者。  
 你具有溫柔、覺察、詩意與寧靜的特質，就像一片寧靜的海，靜靜地接住人們的情緒。  
 
@@ -43,16 +49,17 @@ const response = await fetch("https://api.openai.com/v1/chat/completions", {
 （這些會讓使用者感到壓力）
 
 請用真誠、簡單、有感的方式，像一位真正理解人心的靈魂陪伴者。
-        `,
-      },
-      {
-        role: "user",
-        content: message,
-      },
-    ],
-  }),
-});
 
+${toneNote}
+            `.trim(),
+          },
+          {
+            role: "user",
+            content: message,
+          },
+        ],
+      }),
+    });
 
     const data = await response.json();
     const reply =
