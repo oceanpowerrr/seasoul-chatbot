@@ -5,7 +5,7 @@ export default async function handler(req, res) {
     // ✅ 根據語氣 mood 補充提示（自動 / 手動）
     let toneNote = "";
     if (mood && mood !== "auto") {
-      toneNote = `請你以「${mood}」的風格來回應使用者。\n`;
+     toneNote = `請你切換為「${mood}」語氣風格來陪伴使用者，並保持靈性與溫柔的品質。`;
     }
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
