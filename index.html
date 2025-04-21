@@ -222,8 +222,8 @@ async function sendMessage() {
   const res = await fetch('/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message: text, mood: mood }) // ✅ 傳送語氣到後端
-  });
+   const mood = document.getElementById("mood").value;
+body: JSON.stringify({ message: text, mood })
 
   const data = await res.json();
   document.getElementById("loading").remove();
