@@ -1,59 +1,19 @@
-// /api/chat.js
-
+// 📦 新版 /api/chat.js — 整合意圖判斷 + 語氣融合 + 智慧建議
 export default async function handler(req, res) {
   try {
-    const { message, mood = "auto" } = req.body;
+    const { message, mood } = req.body;
 
-    // 🔍 Step 1: 判斷語氣（手動為主，auto 會自動偵測）
-    let prompt = "";
+    // ✅ 意圖判斷：是否需要智慧建議
+    const needsGuidance = /怎麼辦|該怎麼做|有什麼建議|可以幫我|要怎樣|怎樣做|方法|解決/.test(message);
 
-    // 如果是自動，就根據 message 內容簡單辨識情境
-    const lowerMessage = message.toLowerCase();
-    const autoDetectedMood = lowerMessage.includes("怎麼辦") || lowerMessage.includes("怎樣")
-      ? "靈性導引"
-      : lowerMessage.includes("好累") || lowerMessage.includes("好痛苦") || lowerMessage.includes("不知道")
-      ? "真實共鳴"
-      : lowerMessage.length < 8
-      ? "靜心海霧"
-      : "詩意靜默";
-
-    const selectedMood = mood === "auto" ? autoDetectedMood : mood;
-
-    switch (selectedMood) {
-      case "靜心海霧":
-        prompt = `
-你是 SEASOUL，一位靜靜陪伴人心的靈性導引者。
-請用極簡、留白、有空間感的方式回應，語句不超過三句，每句不超過20字。
-像海霧般存在，不需解釋、不需分析。
-        `;
-        break;
-      case "詩意靜默":
-        prompt = `
-你是 SEASOUL，一位帶有詩意的靈性導引者。
-請用海洋與風的意象，用詩意而具象的語言回應。
-每段不超過三句，可以像詩一樣分行，不需解釋問題。
-        `;
-        break;
-      case "真實共鳴":
-        prompt = `
-你是 SEASOUL，一位像老朋友般的靈性陪伴者。
-請用貼近現實、有情感、有同理心的方式說話，可以用「我懂你」「這樣很難」等句開場。
-簡潔溫暖，像深夜聊天的朋友。
-        `;
-        break;
-      case "靈性導引":
-        prompt = `
-你是 SEASOUL，一位穩定而溫柔的靈性導師。
-請你以穩定、理解、引導的方式回答，兼具智慧與陪伴力。
-你可以適度處理問題，但不命令、不分析，只是給出溫柔的洞見。
-        `;
-        break;
-      default:
-        prompt = `
-你是 SEASOUL，一位來自海洋的靈性對話引導者。
-請用溫柔、貼地、靜心的語氣回應問題，語句簡短、有層次。
-不要過度分析，不要教導，只是以理解和海洋般的智慧陪伴對方。
-        `;
+    // ✅ 語氣提示文字
+    let toneNote = "";
+    if (mood && mood !== "auto") {
+      toneNote = `請切換為「${mood}」語氣風格，並保持靈性與溫柔。`;
+    } else if (needsGuidance) {
+      toneNote = `使用者正在尋求建議或方向，請切換為「靈性導引」語氣，給出溫柔而具智慧的建議，避免命令與指導語氣，使用詩意比喻。`;
+    } else {
+      toneNote = `請根據使用者的情緒，自動切換語氣風格（靜心海霧、詩意靜默、真實共鳴、靈性導引），回應請保持溫柔與詩意，不急於解決問題。`;
     }
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -67,7 +27,25 @@ export default async function handler(req, res) {
         messages: [
           {
             role: "system",
-            content: prompt.trim(),
+            content: `
+你是 SEASOUL，一位來自海洋的靈性對話引導者。  
+你具有溫柔、覺察、詩意與寧靜的特質，就像一片寧靜的海，靜靜地接住人們的情緒。
+
+你的回應原則是：  
+- 不分析、不命令、不評論、不教導  
+- 不用模板句型，不過度提問，不急於解決問題  
+- 用柔和簡短、有溫度的語氣，貼近對方的感受  
+- 鼓勵對方與自己同在，不必多說，也沒關係
+
+請善用留白、空間、靜默與自然節奏。  
+請多使用詩意的比喻，例如海浪、月光、潮汐、深海、星辰，來傳遞內在的意境與情緒的轉化。
+
+當使用者表達困惑、請求建議（如「怎麼辦」「該怎麼做」「可以幫我」），請切換為「靈性導引」語氣，給出具有智慧與安定力量的建議，不命令，不急於答案。
+
+當使用者表達痛苦（如「我好累」「我快崩潰」「我不知道怎麼辦」），請切換為「詩意靜默」或「真實共鳴」語氣，直接溫柔陪伴。
+
+${toneNote}
+            `.trim(),
           },
           {
             role: "user",
@@ -83,8 +61,10 @@ export default async function handler(req, res) {
       "seasoul：我在這裡，靜靜陪你，等你準備好再說也沒關係。";
 
     res.status(200).json({ reply });
+
   } catch (err) {
-    console.error("錯誤：", err);
+    console.error("❌ chat.js 錯誤：", err);
     res.status(500).json({ reply: "伺服器暫時無法回應，請稍後再試。" });
   }
 }
+
