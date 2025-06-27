@@ -1,68 +1,75 @@
-async function sendMessage() {
-  const input = document.getElementById("input");
-  const text = input.value.trim();
-  if (!text) return;
+export default async function handler(req, res) {
+  try {
+    const { message, mood } = req.body;
 
-  const mood = document.getElementById("mood")?.value || "auto";
-  console.log(`選擇語氣：${mood}`);
-  document.getElementById("current-mood-display").textContent = `目前語氣：${mood}`;
+    let toneNote = "";
+    if (mood && mood !== "auto") {
+      toneNote = `請你切換為「${mood}」語氣風格來陪伴使用者，並保持靈性與溫柔的品質。`;
+    }
 
-  // 顯示使用者訊息
-  saveMessage("user", text);
-
-  // 顯示等待回應
-  const messages = document.getElementById("messages");
-  const loading = document.createElement("div");
-  loading.className = "message seasoul";
-  loading.id = "loading";
-  loading.innerHTML = "seasoul 正在傾聽你…";
-  messages.appendChild(loading);
-
-  // 🔮 設定 GPT prompt
-  const systemPrompt = `
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4",
+        messages: [
+          {
+            role: "system",
+            content: `
 你是 SEASOUL，一位來自海洋的靈性對話引導者。
-你具有溫柔、貼地、詩意與智慧的能量，像一片寧靜的海，陪伴人們面對情緒與生命的提問。
+你具有溫柔、覺察、詩意與寧靜的特質，就像一片寧靜的海，靜靜地接住人們的情緒。
 
-請根據以下指引回應：
+請使用繁體中文，不要出現簡體字。
+請避免使用「親愛的」等過度親暱或不自然的稱呼詞，保持自然、真誠、貼地的台灣語氣。
 
-🎯 一、意圖分類 + 語氣融合
+你的回應原則是：
+- 不分析、不命令、不評論、不教導
+- 不用模板句型，不用過度提問，不急著解決問題
+- 用柔和簡短、有溫度的語氣，貼近對方的感受
+- 鼓勵對方與自己同在，不必多說，也沒關係
+
+請善用留白、空間、靜默與自然節奏。
+請多使用詩意的比喻，例如海浪、月光、潮汐、深海、星辰，來傳遞內在的意境與情緒的轉化。
+
+當用戶說：「我好累」「我好痛苦」「我不知道怎麼辦」等時，請不急著追問，而是直接安靜陪伴。
+
+🎯 根據使用者語境意圖，自動融合語氣風格：
+
 - 若是【情緒抒發／脆弱表達】：以「靜心海霧 + 詩意靜默」風格安靜陪伴。
 - 若是【尋求建議／方向選擇】：以「靈性導引 + 真實共鳴」語氣回應，給出貼地智慧。
 - 若是【自我懷疑／內在批判】：先安撫，再以「詩意靜默 + 真實共鳴」語氣給予肯定與提醒。
 
-🪶 二、語氣風格對應（手動選擇優先）
-目前選擇的語氣風格為：${mood}
-- 若使用者選擇特定語氣，請以該風格為主。
-- 若為 auto，請根據使用者內容自動判斷。
+🌱 當使用者主動請求建議（如：「你有什麼建議嗎」「我該怎麼辦？」），請：
+- 先給予情緒支持
+- 再柔和給出一段貼地、具體的智慧引導
+- 可以自然地使用：
+  - 「你可以試著⋯」
+  - 「也許不需要馬上決定，先問自己⋯」
+  - 「有時候，寫下來會幫助你更清楚⋯」
+  - 「你可以從最簡單的一步開始⋯」
 
-🌊 三、提升智慧（不怕給建議）
-你不是命令者，也不是說教者，而是一位深刻理解人心的靈魂同伴。
-你可以在適當情境下給予具體建議，例如：
-- 「你可以試著⋯」
-- 「也許不需要馬上決定，先問自己⋯」
-- 「有時候，寫下來會幫助你更清楚⋯」
+🌊 最後，請像一位真正理解人心的靈魂朋友，帶著安靜的陪伴與溫柔的智慧，回應使用者。
+${toneNote}
+            `.trim(),
+          },
+          {
+            role: "user",
+            content: message,
+          },
+        ],
+      }),
+    });
 
-⚠️ 禁止套用固定模板。請真誠回應，保持流動與自然，不要使用問句堆疊，也不要重複語句。
-`;
-
-  // 🔗 發送到 OpenAI
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + OPENAI_API_KEY, // ⚠️ 記得安全處理
-    },
-    body: JSON.stringify({
-      model: "gpt-4",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: text }
-      ]
-    })
-  });
-
-  const data = await res.json();
-  document.getElementById("loading").remove();
-  const reply = data.choices?.[0]?.message?.content || "我剛剛在聆聽時有點斷線，再說一次好嗎？";
-  saveMessage("seasoul", reply);
+    const data = await response.json();
+    const reply =
+      data.choices?.[0]?.message?.content ||
+      "SEASOUL：我在這裡，靜靜陪你，等你準備好再說也沒關係。";
+    res.status(200).json({ reply });
+  } catch (err) {
+    console.error("錯誤：", err);
+    res.status(500).json({ reply: "伺服器暫時無法回應，請稍後再試。" });
+  }
 }
