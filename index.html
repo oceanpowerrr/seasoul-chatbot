@@ -6,8 +6,100 @@
   <title>靜映 Still Reflection</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    /* 此處省略樣式不變部分（與你原始相同） */
-    /* ... 保留原本所有 CSS 設計 ... */
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Serif TC', serif; }
+    html, body { height: 100%; overflow: hidden; background: #000; }
+    video.bg-video {
+      position: fixed; top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      object-fit: cover;
+      z-index: 0;
+      pointer-events: none;
+    }
+    #logo {
+      position: absolute;
+      top: 30px; left: 30px;
+      width: 180px;
+      z-index: 2;
+    }
+    .intro {
+      text-align: center;
+      color: #fff;
+      margin-top: 100px;
+      margin-bottom: 20px;
+      text-shadow: 1px 1px 4px #000;
+      position: relative;
+      z-index: 1;
+    }
+    .intro h1 { font-size: 2em; margin-bottom: 0.5em; }
+    .intro p { font-size: 1.2em; }
+
+    .quick-options {
+      display: flex; justify-content: center; flex-wrap: wrap;
+      gap: 10px; margin: 10px auto; max-width: 900px; z-index: 1;
+    }
+    .quick-options button {
+      background: rgba(255,255,255,0.2); color: #fff;
+      border: 1px solid #ccc;
+      padding: 6px 12px; border-radius: 6px;
+      font-size: 14px; cursor: pointer;
+      position: relative;
+      z-index: 1;
+    }
+
+    #chatbox {
+      width: 90%; max-width: 900px;
+      height: 50vh; overflow-y: auto;
+      margin: 20px auto 10px auto;
+      padding: 20px; border-radius: 15px;
+      background: rgba(0,0,0,0.4);
+      color: #fff; font-size: 1.1em; line-height: 1.6;
+      position: relative; z-index: 1;
+    }
+    .message { margin-bottom: 10px; }
+    .user { color: #ffffff; font-weight: bold; }
+    .seasoul { font-style: italic; color: #e0e0e0; }
+
+    .input-area {
+      display: flex; justify-content: center; margin-bottom: 20px;
+    }
+    input[type="text"] {
+      padding: 10px; width: 60%;
+      border: none; border-radius: 5px;
+      font-size: 1em; margin-right: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #eee;
+      border: none;
+      font-size: 1em;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #audio-control {
+      position: absolute;
+      bottom: 20px; right: 20px;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 10px; z-index: 10;
+    }
+    #volume-bar {
+      writing-mode: bt-lr;
+      -webkit-appearance: slider-vertical;
+      width: 8px; height: 100px;
+    }
+    #audio-icon {
+      font-size: 20px;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    #export-btn {
+      position: absolute;
+      bottom: 20px; left: 20px;
+      background: rgba(255,255,255,0.2); color: #fff;
+      padding: 6px 10px; border: 1px solid #ccc;
+      border-radius: 6px; cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -23,6 +115,7 @@
 
 <div class="quick-options" id="quick-options"></div>
 
+<!-- 語氣選單 -->
 <div id="mood-selector" style="text-align:center; margin: 10px 0; z-index:2; position:relative;">
   <label for="mood" style="color: #ccc; margin-right: 10px;">語氣風格：</label>
   <select id="mood" style="padding: 6px 12px; border-radius: 6px; font-size: 14px;">
@@ -34,7 +127,7 @@
   </select>
 </div>
 
-<div id="chatbox">
+<div id="chatbox"> 
   <div id="messages"></div>
   <div class="input-area">
     <input type="text" id="input" placeholder="留下你的心語…" />
@@ -85,7 +178,6 @@ function renderMessages() {
   const messages = document.getElementById("messages");
   messages.innerHTML = "";
 
-  // 如果沒有對話紀錄，顯示歡迎語
   if (history.length === 0) {
     saveMessage("seasoul", "歡迎來到靜映 Still Reflection，我在這裡靜靜陪你。");
   } else {
@@ -132,10 +224,10 @@ async function sendMessage() {
 
     const data = await res.json();
     document.getElementById("loading").remove();
-    saveMessage("seasoul", data.reply);
+    saveMessage("seasoul", data.reply || "我在這裡，靜靜陪著你。不用急，也沒關係。");
   } catch (err) {
     document.getElementById("loading").remove();
-    saveMessage("seasoul", "目前暫時無法連接對話服務，請稍後再試 🌊");
+    saveMessage("seasoul", "目前無法連接，請稍後再試 🌊");
     console.error(err);
   }
 }
@@ -159,18 +251,13 @@ function adjustVolume(val) {
 window.onload = () => {
   renderQuickOptions();
   renderMessages();
+
+  // 解決自動播放限制
+  window.addEventListener("click", () => {
+    const bgm = document.getElementById("bgm");
+    if (bgm && bgm.paused) bgm.play();
+  }, { once: true });
 };
-
-// ✅ 允許背景音樂在使用者第一次互動後播放
-window.addEventListener('click', () => {
-  const bgm = document.getElementById('bgm');
-  if (bgm && bgm.paused) bgm.play();
-}, { once: true });
 </script>
-
-<!-- 其餘 Modal 與匯出功能保持不變，可直接從你原始碼貼上 -->
-<!-- 📦 套件載入 -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
 </html>
